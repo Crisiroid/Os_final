@@ -1,57 +1,68 @@
-import 'package:chatbot_chatgpt/chat_page.dart';
 import 'package:flutter/material.dart';
 
-class MainMenu extends StatefulWidget {
+import 'chat_page.dart';
+
+class MainMenuPage extends StatefulWidget {
   @override
-  _MainMenuState createState() => _MainMenuState();
+  _MainMenuPageState createState() => _MainMenuPageState();
 }
 
-class _MainMenuState extends State<MainMenu> {
-  int threadNumber = 0;
+class _MainMenuPageState extends State<MainMenuPage> {
+  List<ChatThread> chatThreads = [];
+  int threadCount = 0;
 
-  void incrementThreadNumber() {
+  void createNewThread() {
     setState(() {
-      threadNumber++;
+      threadCount++;
+      chatThreads.add(ChatThread(threadNumber: threadCount, chatMessages: []));
     });
   }
 
-  void decrementThreadNumber() {
+  void closeThread(int threadNumber) {
     setState(() {
-      threadNumber--;
+      chatThreads.removeWhere((thread) => thread.threadNumber == threadNumber);
     });
+  }
+
+  void resumeThread(ChatThread chatThread) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(
+          chatThread: chatThread,
+          onClose: () => closeThread(chatThread.threadNumber),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chatbot App'),
+        title: const Text('Main Menu'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Thread Number: $threadNumber',
-              style: TextStyle(fontSize: 24),
+      body: ListView.builder(
+        itemCount: chatThreads.length,
+        itemBuilder: (context, index) {
+          ChatThread chatThread = chatThreads[index];
+          return Card(
+            elevation: 2,
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              title: Text(
+                'Thread ${chatThread.threadNumber}',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text('Messages: ${chatThread.chatMessages.length}'),
+              onTap: () => resumeThread(chatThread),
             ),
-            ElevatedButton(
-              onPressed: () {
-                incrementThreadNumber();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatPage(
-                      threadNumber: threadNumber,
-                      onClose: decrementThreadNumber,
-                    ),
-                  ),
-                );
-              },
-              child: Text('Enter Chat'),
-            ),
-          ],
-        ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: createNewThread,
+        child: const Icon(Icons.add),
       ),
     );
   }

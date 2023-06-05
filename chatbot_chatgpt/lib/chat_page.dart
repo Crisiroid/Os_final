@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
-class ChatPage extends StatefulWidget {
+class ChatThread {
   final int threadNumber;
+  final List<String> chatMessages;
+
+  ChatThread({required this.threadNumber, required this.chatMessages});
+}
+
+class ChatPage extends StatefulWidget {
+  final ChatThread chatThread;
   final Function() onClose;
 
-  ChatPage({required this.threadNumber, required this.onClose});
+  ChatPage({required this.chatThread, required this.onClose});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -17,31 +24,49 @@ class _ChatPageState extends State<ChatPage> {
   void addMessage(String message) {
     setState(() {
       chatMessages.add(message);
+      String response = generateResponse(message);
+      chatMessages.add(response);
     });
     messageController.clear();
   }
 
-  void processUserInput(String input) {
-    String lowercaseInput = input.toLowerCase();
-
-    if (lowercaseInput.contains('hello')) {
-      addMessage('Hello! How can I assist you?');
-    } else if (lowercaseInput.contains('how are you')) {
-      addMessage(
-          'I am a chatbot, so I do not have feelings, but thank you for asking!');
-    } else if (lowercaseInput.contains('who are you')) {
-      addMessage(
-          'I am a chatbot. My purpose is to assist and provide information.');
+  String generateResponse(String message) {
+    if (message.toLowerCase() == 'hello') {
+      return 'Hello! How can I assist you?';
+    } else if (message.toLowerCase() == 'how are you?') {
+      return 'I am doing well, thank you!';
+    } else if (message.toLowerCase() == 'what is your name?') {
+      return 'My name is ChatBot.';
+    } else if (message.toLowerCase() == 'what can you do?') {
+      return 'I can answer your questions and provide assistance.';
+    } else if (message.toLowerCase() == 'tell me a joke') {
+      return 'Why don’t scientists trust atoms? Because they make up everything!';
+    } else if (message.toLowerCase() == 'where are you located?') {
+      return 'I exist in the digital realm, so I am everywhere and nowhere at the same time.';
+    } else if (message.toLowerCase() == 'thank you') {
+      return 'You\'re welcome! If you have any more questions, feel free to ask.';
+    } else if (message.toLowerCase() == 'how can I contact you?') {
+      return 'You can reach out to me via email at chatbot@example.com.';
+    } else if (message.toLowerCase() == 'what is the meaning of life?') {
+      return 'The meaning of life is subjective and can vary for each individual.';
+    } else if (message.toLowerCase() == 'bye') {
+      return 'Goodbye! Take care!';
     } else {
-      addMessage('Sorry, I did not understand your message.');
+      return "I'm sorry, I didn't understand that.";
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    chatMessages = widget.chatThread.chatMessages;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat Page - Thread ${widget.threadNumber}'),
+        title: Text('Chat Page - Thread ${widget.chatThread.threadNumber}'),
       ),
       body: Column(
         children: [
@@ -73,7 +98,6 @@ class _ChatPageState extends State<ChatPage> {
                     String message = messageController.text.trim();
                     if (message.isNotEmpty) {
                       addMessage(message);
-                      processUserInput(message);
                     }
                   },
                 ),

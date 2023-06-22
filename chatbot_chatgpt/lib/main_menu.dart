@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
-
 import 'chat_page.dart';
+
+class ChatThread {
+  final int threadNumber;
+  final List<String> chatMessages;
+  final String user;
+
+  ChatThread(
+      {required this.threadNumber,
+      required this.chatMessages,
+      required this.user});
+}
 
 class MainMenuPage extends StatefulWidget {
   @override
@@ -14,7 +24,10 @@ class _MainMenuPageState extends State<MainMenuPage> {
   void createNewThread() {
     setState(() {
       threadCount++;
-      chatThreads.add(ChatThread(threadNumber: threadCount, chatMessages: []));
+      chatThreads.add(ChatThread(
+          threadNumber: threadCount,
+          chatMessages: [],
+          user: 'User $threadCount'));
     });
   }
 
@@ -29,6 +42,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
       context,
       MaterialPageRoute(
         builder: (context) => ChatPage(
+          chatThreads: chatThreads,
           chatThread: chatThread,
           onClose: () => closeThread(chatThread.threadNumber),
         ),
@@ -51,7 +65,7 @@ class _MainMenuPageState extends State<MainMenuPage> {
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListTile(
               title: Text(
-                'Thread ${chatThread.threadNumber}',
+                'Thread ${chatThread.threadNumber} - ${chatThread.user}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text('Messages: ${chatThread.chatMessages.length}'),
@@ -66,4 +80,14 @@ class _MainMenuPageState extends State<MainMenuPage> {
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    title: 'Chat App',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+    home: MainMenuPage(),
+  ));
 }

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-
-class ChatThread {
-  final int threadNumber;
-  final List<String> chatMessages;
-
-  ChatThread({required this.threadNumber, required this.chatMessages});
-}
+import 'main_menu.dart';
 
 class ChatPage extends StatefulWidget {
+  final List<ChatThread> chatThreads;
   final ChatThread chatThread;
   final Function() onClose;
 
-  ChatPage({required this.chatThread, required this.onClose});
+  ChatPage(
+      {required this.chatThreads,
+      required this.chatThread,
+      required this.onClose});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -23,6 +21,11 @@ class _ChatPageState extends State<ChatPage> {
 
   void addMessage(String message) {
     setState(() {
+      widget.chatThreads.forEach((thread) {
+        if (thread.threadNumber != widget.chatThread.threadNumber) {
+          thread.chatMessages.add('${widget.chatThread.user}: $message');
+        }
+      });
       chatMessages.add(message);
       String response = generateResponse(message);
       chatMessages.add(response);
@@ -72,10 +75,25 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: chatMessages.length,
+              itemCount: widget.chatThreads.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(chatMessages[index]),
+                ChatThread chatThread = widget.chatThreads[index];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        'Thread ${chatThread.threadNumber} - ${chatThread.user}:'),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: chatThread.chatMessages.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(chatThread.chatMessages[index]),
+                        );
+                      },
+                    ),
+                  ],
                 );
               },
             ),

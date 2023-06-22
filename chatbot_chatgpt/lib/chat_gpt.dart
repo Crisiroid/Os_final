@@ -13,7 +13,7 @@ class _ChatGptPageState extends State<ChatGptPage> {
 
   Future<String> getChatbotResponse(String message) async {
     String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    String apiKey = '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';
+    String apiKey = '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';
 
     Map<String, dynamic> requestBody = {
       'messages': [

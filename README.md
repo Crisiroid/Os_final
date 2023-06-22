@@ -12,6 +12,6 @@
 </div>
 
 <h3 align="center">
-  A Flutter ChatBot<br/>
+  A Flutter Chat Bot <br/>
   Designed by Crisiroid<br/>
 </h3>
